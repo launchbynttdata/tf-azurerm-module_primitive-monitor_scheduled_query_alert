@@ -1,0 +1,74 @@
+resource_names_map = {
+  resource_group = {
+    name       = "rg"
+    max_length = 80
+  }
+
+  log_analytics_workspace = {
+    name       = "law"
+    max_length = 63
+  }
+
+  application_insights = {
+    name       = "appi"
+    max_length = 260
+  }
+
+  monitor_action_group = {
+    name       = "mag"
+    max_length = 260
+  }
+
+  scheduled_query_alert = {
+    name       = "sqa"
+    max_length = 260
+  }
+}
+
+logical_product_family  = "launch"
+logical_product_service = "monitor"
+class_env               = "test"
+instance_env            = 0
+instance_resource       = 0
+
+location = "eastus"
+
+sku              = "PerGB2018"
+application_type = "web"
+
+alert_description = "Alert when total requests with server errors exceed threshold"
+enabled           = true
+
+# KQL Query: Count requests with error code >= 500, grouped by 5-minute bins
+query = "requests | where tolong(resultCode) >= 500 | summarize count() by bin(timestamp, 5m)"
+
+severity    = 1
+frequency   = 5
+time_window = 30
+
+trigger_operator  = "GreaterThan"
+trigger_threshold = 3
+
+action_group_short_name = "AlertTeam"
+
+# Email receivers for action group
+email_receivers = [
+  {
+    name                    = "Email"
+    email_address           = "alerts@example.com"
+    use_common_alert_schema = true
+  }
+]
+
+arm_role_receivers = []
+
+email_subject          = "Azure Alert: Server Error Detected"
+custom_webhook_payload = "{}"
+
+authorized_resource_ids = []
+
+tags = {
+  environment = "test"
+  terraform   = "true"
+  purpose     = "monitor-scheduled-query-alert"
+}
