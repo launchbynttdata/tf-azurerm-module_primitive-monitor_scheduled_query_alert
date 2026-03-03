@@ -83,12 +83,6 @@ variable "sku" {
   default     = "PerGB2018"
 }
 
-variable "application_type" {
-  type        = string
-  description = "Application Insights application type"
-  default     = "web"
-}
-
 variable "action_group_short_name" {
   description = "Short name of the action group (max 12 characters)"
   type        = string

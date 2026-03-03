@@ -50,21 +50,6 @@ module "log_analytics_workspace" {
   depends_on = [module.resource_group]
 }
 
-module "application_insights" {
-  source  = "terraform.registry.launch.nttdata.com/module_primitive/application_insights/azurerm"
-  version = "~> 1.0"
-
-  name                = module.resource_names["application_insights"].standard
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  application_type    = var.application_type
-  workspace_id        = module.log_analytics_workspace.id
-
-  tags = merge(var.tags, { resource_name = module.resource_names["application_insights"].standard })
-
-  depends_on = [module.resource_group, module.log_analytics_workspace]
-}
-
 module "monitor_action_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm"
   version = "~> 1.0"
@@ -86,7 +71,7 @@ module "scheduled_query_alert" {
   resource_group_name = module.resource_group.name
   location            = var.location
   alert_name          = module.resource_names["scheduled_query_alert"].standard
-  data_source_id      = module.application_insights.id
+  data_source_id      = module.log_analytics_workspace.id
   description         = var.alert_description
   enabled             = var.enabled
   query               = var.query
@@ -104,5 +89,5 @@ module "scheduled_query_alert" {
 
   tags = merge(var.tags, { resource_name = module.resource_names["scheduled_query_alert"].standard })
 
-  depends_on = [module.resource_group, module.application_insights, module.monitor_action_group]
+  depends_on = [module.resource_group, module.log_analytics_workspace, module.monitor_action_group]
 }

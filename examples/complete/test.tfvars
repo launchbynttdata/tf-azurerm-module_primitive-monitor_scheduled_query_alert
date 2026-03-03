@@ -33,8 +33,7 @@ instance_resource       = 0
 
 location = "eastus"
 
-sku              = "PerGB2018"
-application_type = "web"
+sku = "PerGB2018"
 
 alert_description = "Alert when total requests with server errors exceed threshold"
 enabled           = true

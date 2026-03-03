@@ -19,7 +19,6 @@ No providers.
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
 | <a name="module_log_analytics_workspace"></a> [log\_analytics\_workspace](#module\_log\_analytics\_workspace) | terraform.registry.launch.nttdata.com/module_primitive/log_analytics_workspace/azurerm | ~> 1.0 |
-| <a name="module_application_insights"></a> [application\_insights](#module\_application\_insights) | terraform.registry.launch.nttdata.com/module_primitive/application_insights/azurerm | ~> 1.0 |
 | <a name="module_monitor_action_group"></a> [monitor\_action\_group](#module\_monitor\_action\_group) | terraform.registry.launch.nttdata.com/module_primitive/monitor_action_group/azurerm | ~> 1.0 |
 | <a name="module_scheduled_query_alert"></a> [scheduled\_query\_alert](#module\_scheduled\_query\_alert) | ../.. | n/a |
 
@@ -39,7 +38,6 @@ No resources.
 | <a name="input_instance_resource"></a> [instance\_resource](#input\_instance\_resource) | Resource instance number | `number` | `0` | no |
 | <a name="input_location"></a> [location](#input\_location) | Azure location (explicit location parameter for compatibility) | `string` | `"eastus"` | no |
 | <a name="input_sku"></a> [sku](#input\_sku) | Log Analytics Workspace SKU | `string` | `"PerGB2018"` | no |
-| <a name="input_application_type"></a> [application\_type](#input\_application\_type) | Application Insights application type | `string` | `"web"` | no |
 | <a name="input_action_group_short_name"></a> [action\_group\_short\_name](#input\_action\_group\_short\_name) | Short name of the action group (max 12 characters) | `string` | `"AlertTeam"` | no |
 | <a name="input_arm_role_receivers"></a> [arm\_role\_receivers](#input\_arm\_role\_receivers) | List of ARM role receivers for the action group | <pre>list(object({<br/>    name              = string<br/>    role_id           = string<br/>    use_common_schema = optional(bool, true)<br/>  }))</pre> | `[]` | no |
 | <a name="input_email_receivers"></a> [email\_receivers](#input\_email\_receivers) | List of email receivers for the action group | <pre>list(object({<br/>    name                    = string<br/>    email_address           = string<br/>    use_common_alert_schema = optional(bool, true)<br/>  }))</pre> | `[]` | no |
@@ -62,7 +60,6 @@ No resources.
 |------|-------------|
 | <a name="output_scheduled_query_alert_id"></a> [scheduled\_query\_alert\_id](#output\_scheduled\_query\_alert\_id) | The ID of the scheduled query alert |
 | <a name="output_scheduled_query_alert_name"></a> [scheduled\_query\_alert\_name](#output\_scheduled\_query\_alert\_name) | The name of the scheduled query alert |
-| <a name="output_application_insights_id"></a> [application\_insights\_id](#output\_application\_insights\_id) | The ID of the Application Insights instance |
 | <a name="output_log_analytics_workspace_id"></a> [log\_analytics\_workspace\_id](#output\_log\_analytics\_workspace\_id) | The ID of the Log Analytics Workspace |
 | <a name="output_monitor_action_group_id"></a> [monitor\_action\_group\_id](#output\_monitor\_action\_group\_id) | n/a |
 <!-- END_TF_DOCS -->

@@ -8,11 +8,6 @@ output "scheduled_query_alert_name" {
   value       = module.scheduled_query_alert.scheduled_query_alert_name
 }
 
-output "application_insights_id" {
-  description = "The ID of the Application Insights instance"
-  value       = module.application_insights.id
-}
-
 output "log_analytics_workspace_id" {
   description = "The ID of the Log Analytics Workspace"
   value       = module.log_analytics_workspace.id
