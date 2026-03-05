@@ -33,8 +33,8 @@ func TestComposableScheduledQueryAlert(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		SetTestSpecificFlags(map[string]types.TestFlags{
 			"complete": {
-				"IS_TERRAFORM_IDEMPOTENT_APPLY": false,
-				"SKIP_TEST":                     true,
+				"IS_TERRAFORM_IDEMPOTENT_APPLY": true,
+				"SKIP_TEST":                     false,
 			},
 		}).
 		Build()
