@@ -26,10 +26,6 @@ variable "resource_names_map" {
       name       = "law"
       max_length = 63
     }
-    application_insights = {
-      name       = "appi"
-      max_length = 260
-    }
     monitor_action_group = {
       name       = "mag"
       max_length = 260
@@ -149,7 +145,7 @@ variable "frequency" {
 }
 
 variable "time_window" {
-  description = "Time window in minutes for data evaluation"
+  description = "Time window in minutes for data evaluation. Must be between 5 and 2880 and greater than or equal to frequency."
   type        = number
   default     = 30
 }
@@ -176,6 +172,11 @@ variable "custom_webhook_payload" {
   description = "Custom webhook payload JSON string"
   type        = string
   default     = "{}"
+
+  validation {
+    condition     = can(jsondecode(var.custom_webhook_payload))
+    error_message = "custom_webhook_payload must be a valid JSON string."
+  }
 }
 
 variable "authorized_resource_ids" {

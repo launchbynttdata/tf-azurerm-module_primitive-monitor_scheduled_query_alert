@@ -5,8 +5,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.113 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.5 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.117 |
 
 ## Providers
 
@@ -30,7 +30,7 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object({<br/>    name       = string<br/>    max_length = optional(number, 60)<br/>  }))</pre> | <pre>{<br/>  "application_insights": {<br/>    "max_length": 260,<br/>    "name": "appi"<br/>  },<br/>  "log_analytics_workspace": {<br/>    "max_length": 63,<br/>    "name": "law"<br/>  },<br/>  "monitor_action_group": {<br/>    "max_length": 260,<br/>    "name": "mag"<br/>  },<br/>  "resource_group": {<br/>    "max_length": 80,<br/>    "name": "rg"<br/>  },<br/>  "scheduled_query_alert": {<br/>    "max_length": 260,<br/>    "name": "sqa"<br/>  }<br/>}</pre> | no |
+| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object({<br/>    name       = string<br/>    max_length = optional(number, 60)<br/>  }))</pre> | <pre>{<br/>  "log_analytics_workspace": {<br/>    "max_length": 63,<br/>    "name": "law"<br/>  },<br/>  "monitor_action_group": {<br/>    "max_length": 260,<br/>    "name": "mag"<br/>  },<br/>  "resource_group": {<br/>    "max_length": 80,<br/>    "name": "rg"<br/>  },<br/>  "scheduled_query_alert": {<br/>    "max_length": 260,<br/>    "name": "sqa"<br/>  }<br/>}</pre> | no |
 | <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | Logical product family name | `string` | `"launch"` | no |
 | <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | Logical product service name | `string` | `"monitor"` | no |
 | <a name="input_class_env"></a> [class\_env](#input\_class\_env) | Environment classification | `string` | `"test"` | no |
@@ -47,7 +47,7 @@ No resources.
 | <a name="input_query"></a> [query](#input\_query) | The KQL query string to evaluate | `string` | `"requests | where tolong(resultCode) >= 500 | summarize count() by bin(timestamp, 5m)"` | no |
 | <a name="input_severity"></a> [severity](#input\_severity) | Severity of the alert (0-4) | `number` | `1` | no |
 | <a name="input_frequency"></a> [frequency](#input\_frequency) | Frequency of evaluation in minutes (5, 10, 15, 30, 45, 60) | `number` | `5` | no |
-| <a name="input_time_window"></a> [time\_window](#input\_time\_window) | Time window in minutes for data evaluation | `number` | `30` | no |
+| <a name="input_time_window"></a> [time\_window](#input\_time\_window) | Time window in minutes for data evaluation. Must be between 5 and 2880 and greater than or equal to frequency. | `number` | `30` | no |
 | <a name="input_trigger_operator"></a> [trigger\_operator](#input\_trigger\_operator) | Operator for the alert rule trigger (GreaterThan, LessThan, Equal) | `string` | `"GreaterThan"` | no |
 | <a name="input_trigger_threshold"></a> [trigger\_threshold](#input\_trigger\_threshold) | Alert rule trigger threshold value | `number` | `3` | no |
 | <a name="input_email_subject"></a> [email\_subject](#input\_email\_subject) | Email subject for alert notifications | `string` | `"Alert Notification from Azure"` | no |

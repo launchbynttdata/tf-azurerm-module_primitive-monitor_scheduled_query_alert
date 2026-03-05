@@ -1,29 +1,4 @@
-resource_names_map = {
-  resource_group = {
-    name       = "rg"
-    max_length = 80
-  }
 
-  log_analytics_workspace = {
-    name       = "law"
-    max_length = 63
-  }
-
-  application_insights = {
-    name       = "appi"
-    max_length = 260
-  }
-
-  monitor_action_group = {
-    name       = "mag"
-    max_length = 260
-  }
-
-  scheduled_query_alert = {
-    name       = "sqa"
-    max_length = 260
-  }
-}
 
 logical_product_family  = "launch"
 logical_product_service = "monitor"

@@ -4,7 +4,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.5 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~>3.117 |
 
 ## Providers
@@ -36,7 +36,7 @@ No modules.
 | <a name="input_query"></a> [query](#input\_query) | The KQL query string to evaluate | `string` | n/a | yes |
 | <a name="input_severity"></a> [severity](#input\_severity) | Severity of the alert (0, 1, 2, 3, 4) | `number` | `1` | no |
 | <a name="input_frequency"></a> [frequency](#input\_frequency) | Frequency of evaluation in minutes (5, 10, 15, 30, 45, 60) | `number` | `5` | no |
-| <a name="input_time_window"></a> [time\_window](#input\_time\_window) | Time window in minutes for data evaluation (5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 360) | `number` | `30` | no |
+| <a name="input_time_window"></a> [time\_window](#input\_time\_window) | Time window in minutes for data evaluation. Must be between 5 and 2880 and greater than or equal to frequency. | `number` | `30` | no |
 | <a name="input_authorized_resource_ids"></a> [authorized\_resource\_ids](#input\_authorized\_resource\_ids) | List of authorized resource IDs for cross-resource queries | `list(string)` | `[]` | no |
 | <a name="input_trigger_operator"></a> [trigger\_operator](#input\_trigger\_operator) | Operator for the alert rule trigger (GreaterThan, LessThan, Equal, GreaterThanOrEqual, LessThanOrEqual) | `string` | `"GreaterThan"` | no |
 | <a name="input_trigger_threshold"></a> [trigger\_threshold](#input\_trigger\_threshold) | Alert rule trigger threshold value | `number` | `0` | no |
