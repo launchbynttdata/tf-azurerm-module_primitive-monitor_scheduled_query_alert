@@ -17,6 +17,7 @@ import (
 
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
+
 	testimpl "github.com/launchbynttdata/tf-azurerm-module_primitive-monitor_scheduled_query_alert/tests/testimpl"
 )
 
@@ -25,19 +26,13 @@ const (
 	infraTFVarFileNameDefault        = "test.tfvars"
 )
 
-func TestComposableScheduledQueryAlert(t *testing.T) {
+func TestComposableScheduledQueryAlertModule(t *testing.T) {
 
 	ctx := types.CreateTestContextBuilder().
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
 		SetTestConfigFolderName(testConfigsExamplesFolderDefault).
 		SetTestConfigFileName(infraTFVarFileNameDefault).
-		SetTestSpecificFlags(map[string]types.TestFlags{
-			"complete": {
-				"IS_TERRAFORM_IDEMPOTENT_APPLY": true,
-				"SKIP_TEST":                     false,
-			},
-		}).
 		Build()
 
-	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableScheduledQueryAlert)
+	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableScheduledQueryAlert)
 }

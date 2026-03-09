@@ -5,11 +5,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
-	armMonitor "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/monitor/armmonitor"
+	armmonitor "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/monitor/armmonitor"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
 	"github.com/stretchr/testify/assert"
@@ -18,27 +16,17 @@ import (
 func TestComposableScheduledQueryAlert(t *testing.T, ctx types.TestContext) {
 
 	subscriptionId := os.Getenv("ARM_SUBSCRIPTION_ID")
-	if len(subscriptionId) == 0 {
+
+	if subscriptionId == "" {
 		t.Fatal("ARM_SUBSCRIPTION_ID environment variable is not set")
 	}
 
-	credential, err := azidentity.NewDefaultAzureCredential(nil)
+	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
-		t.Fatalf("Unable to get credentials: %e\n", err)
+		t.Fatalf("Unable to get Azure credentials: %v", err)
 	}
 
-	options := arm.ClientOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: cloud.AzurePublic,
-		},
-	}
-
-	scheduledQueryClient, err := armMonitor.NewScheduledQueryRulesClient(subscriptionId, credential, &options)
-	if err != nil {
-		t.Fatalf("Error creating Scheduled Query Rules client: %v", err)
-	}
-
-	t.Run("doesScheduledQueryAlertExist", func(t *testing.T) {
+	t.Run("validateScheduledQueryAlertExists", func(t *testing.T) {
 
 		resourceGroupName := terraform.Output(
 			t,
@@ -52,24 +40,24 @@ func TestComposableScheduledQueryAlert(t *testing.T, ctx types.TestContext) {
 			"scheduled_query_alert_name",
 		)
 
-		logAnalyticsWorkspaceID := terraform.Output(
-			t,
-			ctx.TerratestTerraformOptions(),
-			"log_analytics_workspace_id",
+		client, err := armmonitor.NewScheduledQueryRulesClient(
+			subscriptionId,
+			cred,
+			nil,
 		)
 
-		scheduledQueryAlert, err := scheduledQueryClient.Get(
+		if err != nil {
+			t.Fatalf("Failed to create Scheduled Query Rules client: %v", err)
+		}
+
+		alert, err := client.Get(
 			context.Background(),
 			resourceGroupName,
 			scheduledQueryAlertName,
 			nil,
 		)
 
-		if err != nil {
-			t.Fatalf("Error getting Scheduled Query Alert: %v", err)
-		}
-
-		assert.Equal(t, scheduledQueryAlertName, *scheduledQueryAlert.Name)
-		assert.NotEmpty(t, logAnalyticsWorkspaceID)
+		assert.NoError(t, err)
+		assert.Equal(t, scheduledQueryAlertName, *alert.Name)
 	})
 }

@@ -16,3 +16,6 @@ output "log_analytics_workspace_id" {
 output "monitor_action_group_id" {
   value = module.monitor_action_group.action_group_id
 }
+output "resource_group_name" {
+  value = module.resource_group.name
+}
