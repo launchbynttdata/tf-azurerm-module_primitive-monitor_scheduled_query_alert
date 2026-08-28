@@ -28,15 +28,11 @@ func TestComposableScheduledQueryAlert(t *testing.T, ctx types.TestContext) {
 
 	t.Run("validateScheduledQueryAlertExists", func(t *testing.T) {
 
-		resourceGroupName := terraform.Output(
-			t,
-			ctx.TerratestTerraformOptions(),
+		resourceGroupName := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(),
 			"resource_group_name",
 		)
 
-		scheduledQueryAlertName := terraform.Output(
-			t,
-			ctx.TerratestTerraformOptions(),
+		scheduledQueryAlertName := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(),
 			"scheduled_query_alert_name",
 		)
 

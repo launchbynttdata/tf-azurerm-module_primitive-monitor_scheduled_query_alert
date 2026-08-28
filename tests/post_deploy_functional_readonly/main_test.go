@@ -34,5 +34,5 @@ func TestComposableScheduledQueryAlertModule(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
 
-	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableScheduledQueryAlert)
+	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableScheduledQueryAlert)
 }
