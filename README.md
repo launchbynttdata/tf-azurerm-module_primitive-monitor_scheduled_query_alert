@@ -1,4 +1,31 @@
 # tf-azurerm-module_primitive-monitor_scheduled_query_alert
+
+## Overview
+
+This module creates an Azure Monitor scheduled query alert rule with configurable query, trigger, severity, and action group integration.
+
+## Usage
+
+```hcl
+module "monitor_scheduled_query_alert" {
+	source = "terraform.registry.launch.nttdata.com/module_primitive/monitor_scheduled_query_alert/azurerm"
+
+	resource_group_name = "example-rg"
+	location            = "eastus"
+	alert_name          = "example-scheduled-query-alert"
+	data_source_id      = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/Microsoft.OperationalInsights/workspaces/example-law"
+
+	description       = "Alert when server errors exceed threshold"
+	query             = "requests | where tolong(resultCode) >= 500 | summarize count() by bin(timestamp, 5m)"
+	trigger_operator  = "GreaterThan"
+	trigger_threshold = 3
+
+	action_group_ids = [
+		"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example-rg/providers/microsoft.insights/actionGroups/example-action-group"
+	]
+}
+```
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -46,3 +73,62 @@ No modules.
 | <a name="output_scheduled_query_alert_id"></a> [scheduled\_query\_alert\_id](#output\_scheduled\_query\_alert\_id) | The ID of the scheduled query alert rule |
 | <a name="output_scheduled_query_alert_name"></a> [scheduled\_query\_alert\_name](#output\_scheduled\_query\_alert\_name) | The name of the scheduled query alert rule |
 <!-- END_TF_DOCS -->
+
+## Module Development
+
+Use this repository as a standard Launch Terraform primitive module.
+
+- Keep examples and tests aligned with code changes because they are part of the public contract.
+- Preserve generated files and automation patterns from the shared skeleton unless a module-specific exception is required.
+- Prefer make targets and pre-commit hooks over ad hoc commands to match CI behavior.
+
+## Pre-Requisites
+
+The following commands should be available on your system:
+
+- asdf or mise
+- make
+- python3 (for pre-commit)
+
+Install pinned tool versions and bootstrap dependencies from the repository root:
+
+```sh
+make configure
+```
+
+## Pre-Commit Hooks
+
+This repository uses [.pre-commit-config.yaml](.pre-commit-config.yaml) to run Terraform, Go, and repository hygiene checks.
+
+Install local hooks:
+
+```sh
+pre-commit install --hook-type commit-msg
+```
+
+Run all hooks manually:
+
+```sh
+pre-commit run --all-files
+```
+
+## Local Validation
+
+Run the same validations used in CI:
+
+```sh
+make lint
+make check
+```
+
+If a hook or generated file changes content (for example terraform-docs), commit the updates and rerun the checks.
+
+## Review And Merge Process
+
+- Open a pull request with a clear summary of functional and test-impacting changes.
+- Resolve all review comments and ensure CI is green before merge.
+- Keep commits focused and use conventional commit messages when possible.
+
+## Automatic Updates
+
+This repository receives periodic updates from the shared launch-terraform-skeleton baseline via Copier automation. Keep skeleton-managed files aligned with upstream expectations so automated updates continue to merge cleanly.
