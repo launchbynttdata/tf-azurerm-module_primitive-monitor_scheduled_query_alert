@@ -132,7 +132,7 @@ endef
 # ------------------------------------------------------------------------------
 # When running `make lint` or `make test`, provider configuration files are
 # auto-generated for each example directory based on the providers declared in
-# that directory's `terraform providers` output. The define blocks below
+# the root module's `terraform providers` output.  The define blocks below
 # contain the default content written to each example's provider.tf for the
 # matching registry provider. Examples that declare additional providers not
 # present in the root module will not receive blocks for those providers.
