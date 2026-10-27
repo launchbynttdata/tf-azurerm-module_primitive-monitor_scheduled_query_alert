@@ -15,8 +15,10 @@ terraform {
 
   required_providers {
     azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~>3.117"
+      source = "hashicorp/azurerm"
+      # 4.69.0 added email_subject to the action block of
+      # azurerm_monitor_scheduled_query_rules_alert_v2.
+      version = ">= 4.69, < 5.0"
     }
   }
 }
