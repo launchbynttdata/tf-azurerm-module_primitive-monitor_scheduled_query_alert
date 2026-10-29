@@ -14,7 +14,7 @@ variable "alert_name" {
 }
 
 variable "scope_id" {
-  description = <<EOT
+  description = <<-EOT
     Resource ID the rule is scoped to and whose logs the query runs against - a Log Analytics workspace,
     an Application Insights component, or any resource that sends logs to one. The Azure API accepts
     exactly one scope per rule. Changing this forces a new resource to be created.
@@ -29,7 +29,7 @@ variable "description" {
 }
 
 variable "display_name" {
-  description = "Display name of the alert rule. Defaults to the alert name when unset."
+  description = "Display name of the alert rule. Left unset when null, in which case Azure's own display behaviour applies."
   type        = string
   default     = null
 }
@@ -47,7 +47,7 @@ variable "severity" {
 }
 
 variable "evaluation_frequency" {
-  description = <<EOT
+  description = <<-EOT
     How often the rule is evaluated, in ISO 8601 duration format. One of PT1M, PT5M, PT10M, PT15M, PT30M,
     PT45M, PT1H, PT2H, PT3H, PT4H, PT5H, PT6H, P1D. Cannot exceed window_duration *
     criteria.failing_periods.number_of_evaluation_periods, nor mute_actions_after_alert_duration.
@@ -57,7 +57,7 @@ variable "evaluation_frequency" {
 }
 
 variable "window_duration" {
-  description = <<EOT
+  description = <<-EOT
     Period of logs each evaluation looks at (bin size), in ISO 8601 duration format. One of PT1M, PT5M,
     PT10M, PT15M, PT30M, PT45M, PT1H, PT2H, PT3H, PT4H, PT5H, PT6H, P1D, P2D. PT1M is only valid when
     evaluation_frequency is PT1M.
@@ -67,7 +67,7 @@ variable "window_duration" {
 }
 
 variable "criteria" {
-  description = <<EOT
+  description = <<-EOT
     The condition the rule evaluates.
 
     query:                   KQL query to run against the scope. Validated by Azure on create unless
@@ -84,8 +84,9 @@ variable "criteria" {
                              for each value and fires one alert per value, so the query must project each
                              dimension column. Use ["*"] to match every value.
     failing_periods:         How many of the last N evaluations must breach before the alert fires.
-                             Defaults to 1 of 1. number_of_evaluation_periods must be 1 for queries that
-                             do not project a timestamp column.
+                             Omit it to leave the default to Azure. Both fields accept 1 to 6, and
+                             number_of_evaluation_periods must be 1 for queries that do not project a
+                             timestamp column.
   EOT
 
   type = object({
@@ -143,7 +144,7 @@ variable "email_subject" {
 }
 
 variable "auto_mitigation_enabled" {
-  description = <<EOT
+  description = <<-EOT
     Whether Azure resolves the alert on its own once the condition clears. When false the alert never
     resolves, so consumers that branch on monitorCondition never see a resolved notification. Mutually
     exclusive with mute_actions_after_alert_duration.
@@ -153,7 +154,7 @@ variable "auto_mitigation_enabled" {
 }
 
 variable "mute_actions_after_alert_duration" {
-  description = <<EOT
+  description = <<-EOT
     How long actions stay muted after the alert fires, in ISO 8601 duration format. One of PT5M, PT10M,
     PT15M, PT30M, PT45M, PT1H, PT2H, PT3H, PT4H, PT5H, PT6H, P1D, P2D. Set this to re-notify on a fixed
     cadence while a condition persists; requires auto_mitigation_enabled to be false.
@@ -163,7 +164,7 @@ variable "mute_actions_after_alert_duration" {
 }
 
 variable "query_time_range_override" {
-  description = <<EOT
+  description = <<-EOT
     Query time range, when it should differ from window_duration *
     criteria.failing_periods.number_of_evaluation_periods. One of PT5M, PT10M, PT15M, PT20M, PT30M, PT45M,
     PT1H, PT2H, PT3H, PT4H, PT5H, PT6H, P1D, P2D, and cannot be less than that product.
@@ -179,7 +180,7 @@ variable "skip_query_validation" {
 }
 
 variable "target_resource_types" {
-  description = <<EOT
+  description = <<-EOT
     Resource types within the scope to fire separate alerts for, e.g. Microsoft.Compute/virtualMachines
     when the scope is a resource group.
   EOT
@@ -194,12 +195,13 @@ variable "workspace_alerts_storage_enabled" {
 }
 
 variable "identity" {
-  description = <<EOT
+  description = <<-EOT
     Managed identity the rule queries as. Replaces the v1 authorized_resource_ids input: grant this
     identity Reader on every resource a cross-resource query reads.
 
     type:         SystemAssigned or UserAssigned.
-    identity_ids: User assigned identity IDs. Required when type is UserAssigned.
+    identity_ids: User assigned identity IDs. Required when type is UserAssigned, and must be empty
+                  for SystemAssigned.
   EOT
 
   type = object({
@@ -211,6 +213,12 @@ variable "identity" {
   validation {
     condition     = var.identity == null || try(var.identity.type != "UserAssigned" || length(var.identity.identity_ids) > 0, false)
     error_message = "identity.identity_ids is required when identity.type is UserAssigned."
+  }
+
+  # The provider rejects this inside the identity expand, which only runs on apply.
+  validation {
+    condition     = var.identity == null || try(var.identity.type == "UserAssigned" || length(var.identity.identity_ids) == 0, false)
+    error_message = "identity.identity_ids must be empty when identity.type is SystemAssigned."
   }
 }
 

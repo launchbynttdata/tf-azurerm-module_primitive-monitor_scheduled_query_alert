@@ -99,7 +99,8 @@ module "scheduled_query_alert" {
 
   criteria = var.criteria
 
-  # Re-notify every hour while the condition persists, per failing site.
+  # Mutually exclusive - Azure rejects a mute duration unless auto mitigation is off.
+  # test.tfvars carries the cadence and the column the evaluation splits on.
   auto_mitigation_enabled           = var.auto_mitigation_enabled
   mute_actions_after_alert_duration = var.mute_actions_after_alert_duration
 
