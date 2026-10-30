@@ -28,7 +28,7 @@ module "resource_names" {
 
 module "resource_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   name     = module.resource_names["resource_group"].standard
   location = var.location
@@ -38,7 +38,7 @@ module "resource_group" {
 
 module "log_analytics_workspace" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/log_analytics_workspace/azurerm"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   name                = module.resource_names["log_analytics_workspace"].standard
   location            = var.location
@@ -48,6 +48,23 @@ module "log_analytics_workspace" {
   tags = merge(var.tags, { resource_name = module.resource_names["log_analytics_workspace"].standard })
 
   depends_on = [module.resource_group]
+}
+
+# The rule is scoped to Application Insights rather than the workspace directly: Azure validates
+# criteria.query against the scope's schema on create, and the requests table only resolves for an
+# Application Insights scope.
+module "application_insights" {
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/application_insights/azurerm"
+  version = "~> 2.0"
+
+  name                = module.resource_names["application_insights"].standard
+  location            = var.location
+  resource_group_name = module.resource_group.name
+  workspace_id        = module.log_analytics_workspace.id
+
+  tags = merge(var.tags, { resource_name = module.resource_names["application_insights"].standard })
+
+  depends_on = [module.log_analytics_workspace]
 }
 
 module "monitor_action_group" {
@@ -71,23 +88,27 @@ module "scheduled_query_alert" {
   resource_group_name = module.resource_group.name
   location            = var.location
   alert_name          = module.resource_names["scheduled_query_alert"].standard
-  data_source_id      = module.log_analytics_workspace.id
+  scope_id            = module.application_insights.id
   description         = var.alert_description
+  display_name        = var.display_name
   enabled             = var.enabled
-  query               = var.query
   severity            = var.severity
-  frequency           = var.frequency
-  time_window         = var.time_window
 
-  trigger_operator  = var.trigger_operator
-  trigger_threshold = var.trigger_threshold
+  evaluation_frequency = var.evaluation_frequency
+  window_duration      = var.window_duration
 
-  action_group_ids        = [module.monitor_action_group.action_group_id]
-  email_subject           = var.email_subject
-  custom_webhook_payload  = var.custom_webhook_payload
-  authorized_resource_ids = var.authorized_resource_ids
+  criteria = var.criteria
+
+  # Mutually exclusive - Azure rejects a mute duration unless auto mitigation is off.
+  # test.tfvars carries the cadence and the column the evaluation splits on.
+  auto_mitigation_enabled           = var.auto_mitigation_enabled
+  mute_actions_after_alert_duration = var.mute_actions_after_alert_duration
+
+  action_group_ids  = [module.monitor_action_group.action_group_id]
+  email_subject     = var.email_subject
+  custom_properties = var.custom_properties
 
   tags = merge(var.tags, { resource_name = module.resource_names["scheduled_query_alert"].standard })
 
-  depends_on = [module.resource_group, module.log_analytics_workspace, module.monitor_action_group]
+  depends_on = [module.resource_group, module.application_insights, module.monitor_action_group]
 }

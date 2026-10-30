@@ -26,6 +26,10 @@ variable "resource_names_map" {
       name       = "law"
       max_length = 63
     }
+    application_insights = {
+      name       = "appi"
+      max_length = 260
+    }
     monitor_action_group = {
       name       = "mag"
       max_length = 260
@@ -120,16 +124,16 @@ variable "alert_description" {
   default     = "Alert when results exceed threshold"
 }
 
+variable "display_name" {
+  description = "Display name of the alert rule"
+  type        = string
+  default     = null
+}
+
 variable "enabled" {
   description = "Whether the scheduled query alert rule is enabled"
   type        = bool
   default     = true
-}
-
-variable "query" {
-  description = "The KQL query string to evaluate"
-  type        = string
-  default     = "requests | where tolong(resultCode) >= 500 | summarize count() by bin(timestamp, 5m)"
 }
 
 variable "severity" {
@@ -138,49 +142,59 @@ variable "severity" {
   default     = 1
 }
 
-variable "frequency" {
-  description = "Frequency of evaluation in minutes (5, 10, 15, 30, 45, 60)"
-  type        = number
-  default     = 5
-}
-
-variable "time_window" {
-  description = "Time window in minutes for data evaluation. Must be between 5 and 2880 and greater than or equal to frequency."
-  type        = number
-  default     = 30
-}
-
-variable "trigger_operator" {
-  description = "Operator for the alert rule trigger (GreaterThan, LessThan, Equal)"
+variable "evaluation_frequency" {
+  description = "How often the rule is evaluated, in ISO 8601 duration format"
   type        = string
-  default     = "GreaterThan"
+  default     = "PT5M"
 }
 
-variable "trigger_threshold" {
-  description = "Alert rule trigger threshold value"
-  type        = number
-  default     = 3
+variable "window_duration" {
+  description = "Period of logs each evaluation looks at, in ISO 8601 duration format"
+  type        = string
+  default     = "PT30M"
+}
+
+variable "criteria" {
+  description = "The condition the rule evaluates. See the root module for the shape of each field."
+  type = object({
+    query                   = string
+    threshold               = number
+    operator                = optional(string, "GreaterThan")
+    time_aggregation_method = optional(string, "Count")
+    metric_measure_column   = optional(string)
+    resource_id_column      = optional(string)
+    dimensions = optional(list(object({
+      name     = string
+      values   = list(string)
+      operator = optional(string, "Include")
+    })), [])
+    failing_periods = optional(object({
+      minimum_failing_periods_to_trigger_alert = number
+      number_of_evaluation_periods             = number
+    }))
+  })
+}
+
+variable "auto_mitigation_enabled" {
+  description = "Whether Azure resolves the alert on its own once the condition clears"
+  type        = bool
+  default     = false
+}
+
+variable "mute_actions_after_alert_duration" {
+  description = "How long actions stay muted after the alert fires, in ISO 8601 duration format"
+  type        = string
+  default     = null
 }
 
 variable "email_subject" {
-  description = "Email subject for alert notifications"
+  description = "Subject override for emails sent by the action groups"
   type        = string
-  default     = "Alert Notification from Azure"
+  default     = null
 }
 
-variable "custom_webhook_payload" {
-  description = "Custom webhook payload JSON string"
-  type        = string
-  default     = "{}"
-
-  validation {
-    condition     = can(jsondecode(var.custom_webhook_payload))
-    error_message = "custom_webhook_payload must be a valid JSON string."
-  }
-}
-
-variable "authorized_resource_ids" {
-  description = "List of authorized resource IDs for cross-resource queries"
-  type        = list(string)
-  default     = []
+variable "custom_properties" {
+  description = "Properties to add to the alert payload"
+  type        = map(string)
+  default     = {}
 }
